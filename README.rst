@@ -1,8 +1,7 @@
 zhihu-python：获取知乎信息
 ===============================
 
-modify by tangzhiyi
-connect: 854742740@qq.com
+modify by tangzhiyi,connect: 854742740@qq.com
 
 
 .. contents::
