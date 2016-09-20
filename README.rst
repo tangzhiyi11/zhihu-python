@@ -2,6 +2,8 @@ zhihu-python：获取知乎信息
 ===============================
 
 **注意: 本项目不再维护更新！**
+**modify by tangzhiyi **
+**connect: 854742740@qq.com
 
 .. contents::
 
