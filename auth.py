@@ -9,6 +9,15 @@ from getpass import getpass
 # requirements
 import requests, termcolor
 
+headers = {
+    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:48.0) Gecko/20100101 Firefox/48.0",
+    'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Host': "www.zhihu.com",
+    'Origin': "http://www.zhihu.com",
+    'Pragma': "no-cache",
+    'Referer': "http://www.zhihu.com/",
+    'X-Requested-With': "XMLHttpRequest"
+}
 
 requests = requests.Session()
 requests.cookies = cookielib.LWPCookieJar('cookies')
@@ -17,33 +26,36 @@ try:
 except:
     pass
 
+
 class Logging:
     flag = True
 
     @staticmethod
     def error(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("ERROR", "red"), ": ", termcolor.colored(msg, "white") ] )
+        if Logging.flag:
+            print "".join([termcolor.colored("ERROR", "red"), ": ", termcolor.colored(msg, "white")])
+
     @staticmethod
     def warn(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("WARN", "yellow"), ": ", termcolor.colored(msg, "white") ] )
+        if Logging.flag:
+            print "".join([termcolor.colored("WARN", "yellow"), ": ", termcolor.colored(msg, "white")])
+
     @staticmethod
     def info(msg):
         # attrs=['reverse', 'blink']
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("INFO", "magenta"), ": ", termcolor.colored(msg, "white") ] )
+        if Logging.flag:
+            print "".join([termcolor.colored("INFO", "magenta"), ": ", termcolor.colored(msg, "white")])
+
     @staticmethod
     def debug(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("DEBUG", "magenta"), ": ", termcolor.colored(msg, "white") ] )
+        if Logging.flag:
+            print "".join([termcolor.colored("DEBUG", "magenta"), ": ", termcolor.colored(msg, "white")])
+
     @staticmethod
     def success(msg):
-        if Logging.flag == True:
-            print "".join(  [ termcolor.colored("SUCCES", "green"), ": ", termcolor.colored(msg, "white") ] )
+        if Logging.flag:
+            print "".join([ termcolor.colored("SUCCES", "green"), ": ", termcolor.colored(msg, "white")])
 
-# Setting Logging
-Logging.flag = True
 
 class LoginPasswordError(Exception):
     def __init__(self, message):
@@ -51,11 +63,14 @@ class LoginPasswordError(Exception):
         else: self.message = message
         Logging.error(self.message)
 
+
 class NetworkError(Exception):
     def __init__(self, message):
         if type(message) != type("") or message == "": self.message = u"网络异常"
         else: self.message = message
         Logging.error(self.message)
+
+
 class AccountError(Exception):
     def __init__(self, message):
         if type(message) != type("") or message == "": self.message = u"帐号类型错误"
@@ -63,12 +78,9 @@ class AccountError(Exception):
         Logging.error(self.message)
 
 
-
-
-
 def download_captcha():
     url = "https://www.zhihu.com/captcha.gif"
-    r = requests.get(url, params={"r": random.random(), "type": "login"}, verify=False)
+    r = requests.get(url, params={"r": random.random(), "type": "login"}, verify=False, headers=headers)
     if int(r.status_code) != 200:
         raise NetworkError(u"验证码请求失败")
     image_name = u"verify." + r.headers['content-type'].split("/")[1]
@@ -89,14 +101,14 @@ def download_captcha():
         os.system("%s" % image_name )
     else:
         Logging.info(u"我们无法探测你的作业系统，请自行打开验证码 %s 文件，并输入验证码。" % os.path.join(os.getcwd(), image_name) )
-
     sys.stdout.write(termcolor.colored(u"请输入验证码: ", "cyan") )
     captcha_code = raw_input( )
     return captcha_code
 
+
 def search_xsrf():
     url = "http://www.zhihu.com/"
-    r = requests.get(url, verify=False)
+    r = requests.get(url, verify=False, headers=headers)
     if int(r.status_code) != 200:
         raise NetworkError(u"验证码请求失败")
     results = re.compile(r"\<input\stype=\"hidden\"\sname=\"_xsrf\"\svalue=\"(\S+)\"", re.DOTALL).findall(r.text)
@@ -104,6 +116,7 @@ def search_xsrf():
         Logging.info(u"提取XSRF 代码失败" )
         return None
     return results[0]
+
 
 def build_form(account, password):
     if re.match(r"^1\d{10}$", account): account_type = "phone_num"
@@ -116,6 +129,7 @@ def build_form(account, password):
     form['captcha'] = download_captcha()
     return form
 
+
 def upload_form(form):
     if "email" in form:
         url = "https://www.zhihu.com/login/email"
@@ -123,16 +137,6 @@ def upload_form(form):
         url = "https://www.zhihu.com/login/phone_num"
     else:
         raise ValueError(u"账号类型错误")
-
-    headers = {
-        'User-Agent': "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36",
-        'Host': "www.zhihu.com",
-        'Origin': "http://www.zhihu.com",
-        'Pragma': "no-cache",
-        'Referer': "http://www.zhihu.com/",
-        'X-Requested-With': "XMLHttpRequest"
-    }
-
     r = requests.post(url, data=form, headers=headers, verify=False)
     if int(r.status_code) != 200:
         raise NetworkError(u"表单上传失败!")
@@ -163,7 +167,7 @@ def upload_form(form):
 def islogin():
     # check session
     url = "https://www.zhihu.com/settings/profile"
-    r = requests.get(url, allow_redirects=False, verify=False)
+    r = requests.get(url, allow_redirects=False, verify=False, headers=headers)
     status_code = int(r.status_code)
     if status_code == 301 or status_code == 302:
         # 未登录
@@ -194,8 +198,6 @@ def read_account_from_config_file(config_file="config.ini"):
     else:
         Logging.error(u"配置文件加载失败！")
         return (None, None)
-
-
 
 
 def login(account=None, password=None):
@@ -235,6 +237,7 @@ def login(account=None, password=None):
         Logging.success(u"登录成功！" )
         requests.cookies.save()
         return True
+
 
 if __name__ == "__main__":
     # login(account="xxxx@email.com", password="xxxxx")
