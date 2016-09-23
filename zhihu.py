@@ -52,6 +52,7 @@
 # Build-in / Std
 import os, sys, time, platform, random
 import re, json, cookielib
+import utils
 
 # requirements
 import requests, termcolor, html2text
@@ -296,9 +297,9 @@ class Question:
         headers = {
             'User-Agent': "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36",
             'Host': "www.zhihu.com",
-            'Origin': "http://www.zhihu.com",
+            'Origin': "https://www.zhihu.com",
             'Pragma': "no-cache",
-            'Referer': "http://www.zhihu.com/"
+            'Referer': "https://www.zhihu.com/"
         }
         r = requests.get(self.url,headers=headers, verify=False)
         self.soup = BeautifulSoup(r.content, "lxml")
