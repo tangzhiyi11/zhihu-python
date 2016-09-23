@@ -315,7 +315,8 @@ class Question:
             if self.soup == None:
                 self.parser()
             soup = self.soup
-            title = soup.find("h2", class_="zm-item-title").string.encode("utf-8").replace("\n", "")
+            utils.test_into_file(soup.text)
+            title = soup.find("h2", attrs={'class':'zm-item-title'}).text.encode("utf-8").replace("\n", "")
             self.title = title
             if platform.system() == 'Windows':
                 title = title.decode('utf-8').encode('gbk')
@@ -347,14 +348,14 @@ class Question:
         if self.soup == None:
             self.parser()
         soup = self.soup
-        followers_num = int(soup.find("div", class_="zg-gray-normal").a.strong.string)
+        followers_num = int(soup.find("div", attrs={"class":"zg-gray-normal"}).find('a').find('strong').text)
         return followers_num
 
     def get_topics(self):
         if self.soup == None:
             self.parser()
         soup = self.soup
-        topic_list = soup.find_all("a", class_="zm-item-tag")
+        topic_list = soup.find_all("a", attrs={'class':'zm-item-tag'})
         topics = []
         for i in topic_list:
             topic = i.contents[0].encode("utf-8").replace("\n", "")
@@ -380,11 +381,11 @@ class Question:
                         soup = BeautifulSoup(self.soup.encode("utf-8"), "lxml")
 
                         is_my_answer = False
-                        if soup.find_all("div", class_="zm-item-answer")[j].find("span", class_="count") == None:
+                        if soup.find_all("div", attrs={"class":'zm-item-answer'})[j].find("span", class_="count") == None:
                             my_answer_count += 1
                             is_my_answer = True
 
-                        if soup.find_all("div", class_="zm-item-answer")[j].find("div", class_="zm-editable-content clearfix") == None:
+                        if soup.find_all("div", attrs={"class":'zm-item-answer'})[j].find("div", attrs={'class':'zm-editable-content clearfix'}) == None:
                             error_answer_count += 1
                             continue
                         author = None

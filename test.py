@@ -282,17 +282,17 @@ def test():
 
 
 def main():
-    url = "http://www.zhihu.com/question/24269892"
+    url = "https://www.zhihu.com/question/24269892"
     question_test(url)
-    answer_url = "http://www.zhihu.com/question/24269892/answer/29960616"
+    answer_url = "https://www.zhihu.com/question/24269892/answer/29960616"
     answer_test(answer_url)
-    user_url = "http://www.zhihu.com/people/jixin"
+    user_url = "https://www.zhihu.com/people/jixin"
     user_test(user_url)
-    collection_url = "http://www.zhihu.com/collection/36750683"
+    collection_url = "https://www.zhihu.com/collection/36750683"
     collection_test(collection_url)
-    post_url = "http://zhuanlan.zhihu.com/p/20770968"
+    post_url = "https://zhuanlan.zhihu.com/p/20770968"
     post_test(post_url)
-    column_url = "http://zhuanlan.zhihu.com/daily"
+    column_url = "https://zhuanlan.zhihu.com/daily"
     column_test(column_url)
     test()
 
